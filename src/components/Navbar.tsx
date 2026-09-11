@@ -28,6 +28,8 @@ export function Navbar() {
           </Link>
           <Link
             to="/browse"
+            search={{ q: "" }}
+
             activeProps={{ className: "text-foreground font-medium" }}
             inactiveProps={{ className: "text-muted-foreground" }}
             className="transition-colors hover:text-foreground"

@@ -8,7 +8,7 @@ import { fetchList, searchMovies, type Movie } from "@/lib/tmdb";
 
 export const Route = createFileRoute("/browse")({
   validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search.q === "string" ? search.q : "",
+    q: typeof search["q"] === "string" ? (search["q"] as string) : "",
   }),
   head: () => ({
     meta: [
