@@ -42,4 +42,4 @@ export const genreNames = (
     .filter(Boolean)
     .slice(0, 3) as string[];
 
-export const embedUrl = (id: number) => `https://vidlink.pro/embed/movie/${id}`;
+export const embedUrl = (id: number) => `https://vidlink.pro/movie/${id}`;
