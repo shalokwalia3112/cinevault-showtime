@@ -16,7 +16,7 @@ export function PlayerModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-6xl overflow-hidden rounded-lg bg-card shadow-2xl"
+        className="w-full max-w-[1100px] overflow-hidden rounded-lg bg-card shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -29,12 +29,12 @@ export function PlayerModal({
             <X size={20} />
           </button>
         </div>
-        <div className="aspect-video w-full bg-black">
+        <div className="relative w-full bg-black" style={{ aspectRatio: "16 / 9" }}>
           <iframe
             key={movie.id}
             src={embedUrl(movie.id)}
             title={`${movie.title} player`}
-            className="h-full w-full"
+            className="absolute inset-0 h-full w-full border-0"
             allowFullScreen
             allow="autoplay; fullscreen; encrypted-media"
           />
