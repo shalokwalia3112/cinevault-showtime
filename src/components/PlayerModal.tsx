@@ -32,7 +32,7 @@ export function PlayerModal({
         <div className="aspect-video w-full bg-black">
           <iframe
             key={movie.id}
-            src={embedUrl()}
+            src={embedUrl(movie.id)}
             title={`${movie.title} player`}
             className="h-full w-full"
             allowFullScreen
