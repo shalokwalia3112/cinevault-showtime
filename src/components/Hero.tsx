@@ -54,14 +54,6 @@ export function Hero({
           >
             <Play size={18} className="fill-current" /> Play
           </button>
-          <a
-            href={`https://www.themoviedb.org/movie/${movie.id}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded bg-secondary/80 px-7 py-3 font-semibold tracking-wide uppercase transition-colors hover:bg-secondary"
-          >
-            <Info size={18} /> More Info
-          </a>
         </div>
       </div>
     </section>
