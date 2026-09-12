@@ -64,6 +64,9 @@ function MoviePage() {
           </div>
         </section>
 
+        {/* Under-player banner: 728x90 */}
+        <AdBanner label="Advertisement" />
+
         <article className="border-b border-border py-7">
           <h1 className="font-display text-3xl leading-tight uppercase sm:text-4xl">{movie.title}</h1>
           {movie.tagline && <p className="mt-2 text-base text-muted-foreground">{movie.tagline}</p>}
