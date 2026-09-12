@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { PosterCard } from "@/components/PosterCarousel";
-import { PlayerModal } from "@/components/PlayerModal";
 import { fetchList, searchMovies, type Movie } from "@/lib/tmdb";
 
 export const Route = createFileRoute("/browse")({
@@ -22,6 +20,8 @@ export const Route = createFileRoute("/browse")({
         property: "og:description",
         content: "Search thousands of movies and start watching instantly on CineVault.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Browse,
@@ -29,7 +29,9 @@ export const Route = createFileRoute("/browse")({
 
 function Browse() {
   const { q } = Route.useSearch();
-  const [playing, setPlaying] = useState<Movie | null>(null);
+  const navigate = useNavigate();
+  const openMovie = (movie: Movie) =>
+    navigate({ to: "/movie/$movieId", params: { movieId: String(movie.id) } });
 
   const movies = useQuery({
     queryKey: ["browse", q],
@@ -44,13 +46,12 @@ function Browse() {
           {q ? `Results for "${q}"` : "Browse Movies"}
         </h1>
         <div className="flex flex-wrap gap-3">
-          {movies.data?.map((m) => <PosterCard key={m.id} movie={m} onPlay={setPlaying} />)}
+          {movies.data?.map((m) => <PosterCard key={m.id} movie={m} onPlay={openMovie} />)}
         </div>
         {movies.data?.length === 0 && (
           <p className="text-sm text-muted-foreground">No movies found.</p>
         )}
       </main>
-      <PlayerModal movie={playing} onClose={() => setPlaying(null)} />
     </div>
   );
 }

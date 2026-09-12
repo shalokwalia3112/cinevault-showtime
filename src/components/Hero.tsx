@@ -1,4 +1,4 @@
-import { Info, Play, Star } from "lucide-react";
+import { Play, Star } from "lucide-react";
 import { IMG, genreNames, type Movie } from "@/lib/tmdb";
 
 export function Hero({
