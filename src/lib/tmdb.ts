@@ -15,6 +15,20 @@ export type Movie = {
   genre_ids?: number[];
 };
 
+export type CastMember = {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+};
+
+export type MovieDetails = Omit<Movie, "genre_ids"> & {
+  genres: { id: number; name: string }[];
+  runtime: number | null;
+  tagline: string;
+  credits: { cast: CastMember[] };
+};
+
 async function get<T>(path: string, params: Record<string, string> = {}): Promise<T> {
   const url = new URL(`${BASE}${path}`);
   url.searchParams.set("api_key", API_KEY);
@@ -32,6 +46,9 @@ export const fetchGenres = () =>
 
 export const searchMovies = (query: string) =>
   fetchList("/search/movie", { query, include_adult: "false" });
+
+export const fetchMovieDetails = (id: number) =>
+  get<MovieDetails>(`/movie/${id}`, { append_to_response: "credits" });
 
 export const genreNames = (
   ids: number[] | undefined,

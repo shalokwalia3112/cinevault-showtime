@@ -1,10 +1,8 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { PosterCarousel } from "@/components/PosterCarousel";
-import { PlayerModal } from "@/components/PlayerModal";
 import { fetchGenres, fetchList, type Movie } from "@/lib/tmdb";
 
 export const Route = createFileRoute("/")({
@@ -21,13 +19,17 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Trending and popular movies with ratings, genres and instant playback.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
 });
 
 function Home() {
-  const [playing, setPlaying] = useState<Movie | null>(null);
+  const navigate = useNavigate();
+  const openMovie = (movie: Movie) =>
+    navigate({ to: "/movie/$movieId", params: { movieId: String(movie.id) } });
   const trending = useQuery({
     queryKey: ["trending"],
     queryFn: () => fetchList("/trending/movie/week"),
@@ -39,13 +41,12 @@ function Home() {
   return (
     <div className="min-h-screen bg-background pb-16">
       <Navbar />
-      <Hero movie={trending.data?.[0]} genres={genres.data} onPlay={setPlaying} />
+      <Hero movie={trending.data?.[0]} genres={genres.data} onPlay={openMovie} />
       <div className="relative -mt-16">
-        <PosterCarousel title="Trending Now" movies={trending.data} onPlay={setPlaying} />
-        <PosterCarousel title="Popular on CineVault" movies={popular.data} onPlay={setPlaying} />
-        <PosterCarousel title="Top Rated" movies={topRated.data} onPlay={setPlaying} />
+        <PosterCarousel title="Trending Now" movies={trending.data} onPlay={openMovie} />
+        <PosterCarousel title="Popular on CineVault" movies={popular.data} onPlay={openMovie} />
+        <PosterCarousel title="Top Rated" movies={topRated.data} onPlay={openMovie} />
       </div>
-      <PlayerModal movie={playing} onClose={() => setPlaying(null)} />
     </div>
   );
 }
