@@ -64,6 +64,9 @@ function MoviePage() {
           </div>
         </section>
 
+        {/* Under-player banner: 728x90 */}
+        <AdBanner label="Advertisement" />
+
         <article className="border-b border-border py-7">
           <h1 className="font-display text-3xl leading-tight uppercase sm:text-4xl">{movie.title}</h1>
           {movie.tagline && <p className="mt-2 text-base text-muted-foreground">{movie.tagline}</p>}
@@ -95,6 +98,9 @@ function MoviePage() {
           </div>
         </article>
 
+        {/* Content-break banner: 728x90 */}
+        <AdBanner label="Advertisement" />
+
         <section className="py-8" aria-labelledby="cast-heading">
           <h2 id="cast-heading" className="font-display text-xl uppercase">Cast</h2>
           <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 lg:grid-cols-8">
@@ -113,6 +119,17 @@ function MoviePage() {
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+function AdBanner({ label }: { label: string }) {
+  return (
+    <div
+      aria-label={label}
+      className="mx-auto my-6 flex h-[90px] w-full max-w-[728px] items-center justify-center rounded-md border border-border/60 bg-card/30 text-xs uppercase tracking-widest text-muted-foreground/50"
+    >
+      {label}
     </div>
   );
 }
