@@ -98,6 +98,9 @@ function MoviePage() {
           </div>
         </article>
 
+        {/* Content-break banner: 728x90 */}
+        <AdBanner label="Advertisement" />
+
         <section className="py-8" aria-labelledby="cast-heading">
           <h2 id="cast-heading" className="font-display text-xl uppercase">Cast</h2>
           <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 lg:grid-cols-8">
