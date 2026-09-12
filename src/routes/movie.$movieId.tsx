@@ -123,6 +123,17 @@ function MoviePage() {
   );
 }
 
+function AdBanner({ label }: { label: string }) {
+  return (
+    <div
+      aria-label={label}
+      className="mx-auto my-6 flex h-[90px] w-full max-w-[728px] items-center justify-center rounded-md border border-border/60 bg-card/30 text-xs uppercase tracking-widest text-muted-foreground/50"
+    >
+      {label}
+    </div>
+  );
+}
+
 function MoviePageSkeleton() {
   return (
     <div className="min-h-screen bg-background px-4 pt-24 sm:px-6 md:px-10">
