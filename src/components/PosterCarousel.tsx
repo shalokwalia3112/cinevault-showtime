@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { IMG, type Movie } from "@/lib/tmdb";
+import { IMG, type MediaItem } from "@/lib/tmdb";
 
-export function PosterCard({ movie, onPlay }: { movie: Movie; onPlay: (m: Movie) => void }) {
+export function PosterCard({ movie, onPlay }: { movie: MediaItem; onPlay: (m: MediaItem) => void }) {
   return (
     <button
       onClick={() => onPlay(movie)}
@@ -12,15 +12,17 @@ export function PosterCard({ movie, onPlay }: { movie: Movie; onPlay: (m: Movie)
         src={IMG(movie.poster_path)}
         alt={`${movie.title} poster`}
         loading="lazy"
-        className="aspect-[2/3] w-full object-cover"
+        className="aspect-[2/3] w-full object-cover transition duration-300 group-hover:brightness-75"
       />
       <span className="absolute top-2 left-2 flex items-center gap-1 rounded bg-black/75 px-1.5 py-0.5 text-xs font-semibold">
         <Star size={12} className="fill-primary text-primary" />
         {movie.vote_average.toFixed(1)}
       </span>
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
         <p className="truncate text-sm font-medium">{movie.title}</p>
-        <p className="text-xs text-muted-foreground">{movie.release_date?.slice(0, 4)}</p>
+        <p className="text-xs text-muted-foreground">
+          {movie.release_date?.slice(0, 4)}{movie.mediaType === "tv" ? " · Series" : ""}
+        </p>
       </div>
     </button>
   );
@@ -32,8 +34,8 @@ export function PosterCarousel({
   onPlay,
 }: {
   title: string;
-  movies: Movie[] | undefined;
-  onPlay: (m: Movie) => void;
+  movies: MediaItem[] | undefined;
+  onPlay: (m: MediaItem) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) =>
@@ -46,7 +48,7 @@ export function PosterCarousel({
       </h2>
       <div
         ref={ref}
-        className="flex gap-3 overflow-x-auto scroll-smooth px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:px-10 [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-6 pb-3 overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] md:px-10 [&>button]:snap-start [&::-webkit-scrollbar]:hidden"
       >
         {movies
           ? movies.map((m) => <PosterCard key={m.id} movie={m} onPlay={onPlay} />)
