@@ -1,39 +1,42 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { IMG, type Movie } from "@/lib/tmdb";
+import { Button } from "@/components/ui/button";
+import { IMG, mediaDate, mediaTitle, type MediaItem } from "@/lib/tmdb";
 
-export function PosterCard({ movie, onPlay }: { movie: Movie; onPlay: (m: Movie) => void }) {
+export function PosterCard({ item, onPlay }: { item: MediaItem; onPlay: (item: MediaItem) => void }) {
+  const title = mediaTitle(item);
   return (
-    <button
-      onClick={() => onPlay(movie)}
+    <Button
+      variant="ghost"
+      onClick={() => onPlay(item)}
       className="group relative w-[150px] shrink-0 overflow-hidden rounded-md bg-card text-left transition-transform duration-300 hover:scale-105 md:w-[190px]"
     >
       <img
-        src={IMG(movie.poster_path)}
-        alt={`${movie.title} poster`}
+        src={IMG(item.poster_path)}
+        alt={`${title} poster`}
         loading="lazy"
         className="aspect-[2/3] w-full object-cover"
       />
       <span className="absolute top-2 left-2 flex items-center gap-1 rounded bg-black/75 px-1.5 py-0.5 text-xs font-semibold">
         <Star size={12} className="fill-primary text-primary" />
-        {movie.vote_average.toFixed(1)}
+        {item.vote_average.toFixed(1)}
       </span>
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
-        <p className="truncate text-sm font-medium">{movie.title}</p>
-        <p className="text-xs text-muted-foreground">{movie.release_date?.slice(0, 4)}</p>
+        <p className="truncate text-sm font-medium">{title}</p>
+        <p className="text-xs text-muted-foreground">{mediaDate(item)?.slice(0, 4)}</p>
       </div>
-    </button>
+    </Button>
   );
 }
 
 export function PosterCarousel({
   title,
-  movies,
+  items,
   onPlay,
 }: {
   title: string;
-  movies: Movie[] | undefined;
-  onPlay: (m: Movie) => void;
+  items: MediaItem[] | undefined;
+  onPlay: (item: MediaItem) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) =>
@@ -48,8 +51,8 @@ export function PosterCarousel({
         ref={ref}
         className="flex gap-3 overflow-x-auto scroll-smooth px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:px-10 [&::-webkit-scrollbar]:hidden"
       >
-        {movies
-          ? movies.map((m) => <PosterCard key={m.id} movie={m} onPlay={onPlay} />)
+        {items
+          ? items.map((item) => <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={onPlay} />)
           : Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
@@ -57,20 +60,24 @@ export function PosterCarousel({
               />
             ))}
       </div>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="Scroll left"
         onClick={() => scroll(-1)}
         className="absolute top-1/2 left-1 hidden -translate-y-1/2 rounded-full bg-black/60 p-2 opacity-0 transition-opacity group-hover/row:opacity-100 md:block"
       >
         <ChevronLeft size={22} />
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="Scroll right"
         onClick={() => scroll(1)}
         className="absolute top-1/2 right-1 hidden -translate-y-1/2 rounded-full bg-black/60 p-2 opacity-0 transition-opacity group-hover/row:opacity-100 md:block"
       >
         <ChevronRight size={22} />
-      </button>
+      </Button>
     </section>
   );
 }
