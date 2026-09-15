@@ -20,7 +20,8 @@ export const Route = createFileRoute("/movie/$movieId")({
     context.queryClient.ensureQueryData(movieQueryOptions(params.movieId)),
   head: ({ loaderData }) => {
     const title = loaderData ? `${loaderData.title} — Watch on CineVault` : "Movie — CineVault";
-    const description = loaderData?.overview || "Watch this movie and explore its details on CineVault.";
+    const description =
+      loaderData?.overview || "Watch this movie and explore its details on CineVault.";
     return {
       meta: [
         { title },
@@ -70,7 +71,9 @@ function MoviePage() {
         <AdBanner label="Advertisement" />
 
         <article className="border-b border-border py-7">
-          <h1 className="font-display text-3xl leading-tight uppercase sm:text-4xl">{movie.title}</h1>
+          <h1 className="font-display text-3xl leading-tight uppercase sm:text-4xl">
+            {movie.title}
+          </h1>
           {movie.tagline && <p className="mt-2 text-base text-muted-foreground">{movie.tagline}</p>}
 
           <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
@@ -88,7 +91,10 @@ function MoviePage() {
               </span>
             )}
             {movie.genres.map((genre) => (
-              <span key={genre.id} className="rounded border border-border px-2.5 py-1 text-muted-foreground">
+              <span
+                key={genre.id}
+                className="rounded border border-border px-2.5 py-1 text-muted-foreground"
+              >
                 {genre.name}
               </span>
             ))}
@@ -96,7 +102,9 @@ function MoviePage() {
 
           <div className="mt-7 max-w-4xl">
             <h2 className="font-display text-lg uppercase">About this movie</h2>
-            <p className="mt-3 text-sm leading-7 text-foreground/75 sm:text-base">{movie.overview}</p>
+            <p className="mt-3 text-sm leading-7 text-foreground/75 sm:text-base">
+              {movie.overview}
+            </p>
           </div>
         </article>
 
@@ -104,7 +112,9 @@ function MoviePage() {
         <AdBanner label="Advertisement" />
 
         <section className="py-8" aria-labelledby="cast-heading">
-          <h2 id="cast-heading" className="font-display text-xl uppercase">Cast</h2>
+          <h2 id="cast-heading" className="font-display text-xl uppercase">
+            Cast
+          </h2>
           <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 lg:grid-cols-8">
             {cast.map((person) => (
               <div key={person.id} className="min-w-0">
