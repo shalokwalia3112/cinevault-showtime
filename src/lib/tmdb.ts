@@ -69,7 +69,9 @@ export const fetchList = (path: string, params?: Record<string, string>) =>
 
 export const fetchTVList = (path: string, params?: Record<string, string>) =>
   get<{ results: TVShow[] }>(path, params).then((d) =>
-    d.results.filter((show) => show.poster_path).map((show) => ({ ...show, media_type: "tv" as const })),
+    d.results
+      .filter((show) => show.poster_path)
+      .map((show) => ({ ...show, media_type: "tv" as const })),
   );
 
 export const fetchGenres = async () => {
@@ -77,20 +79,25 @@ export const fetchGenres = async () => {
     get<{ genres: { id: number; name: string }[] }>("/genre/movie/list"),
     get<{ genres: { id: number; name: string }[] }>("/genre/tv/list"),
   ]);
-  return [...new Map([...movieGenres.genres, ...tvGenres.genres].map((genre) => [genre.id, genre])).values()];
+  return [
+    ...new Map(
+      [...movieGenres.genres, ...tvGenres.genres].map((genre) => [genre.id, genre]),
+    ).values(),
+  ];
 };
 
 export const searchCatalog = (query: string) =>
   get<{ results: Array<Movie | TVShow | ({ media_type: "person" } & Record<string, unknown>)> }>(
     "/search/multi",
     { query, include_adult: "false" },
-  ).then((data) =>
-    data.results
-      .filter(
-        (item): item is Movie | TVShow =>
-          (item.media_type === "movie" || item.media_type === "tv") && Boolean(item.poster_path),
-      )
-      .map((item) => ({ ...item, media_type: item.media_type as "movie" | "tv" })) as MediaItem[],
+  ).then(
+    (data) =>
+      data.results
+        .filter(
+          (item): item is Movie | TVShow =>
+            (item.media_type === "movie" || item.media_type === "tv") && Boolean(item.poster_path),
+        )
+        .map((item) => ({ ...item, media_type: item.media_type as "movie" | "tv" })) as MediaItem[],
   );
 
 export const fetchMovieDetails = (id: number) =>
@@ -115,7 +122,11 @@ const mergeCatalog = (lists: MediaItem[][]) => {
 export const fetchCuratedMovieRow = async (filters: Record<string, string>) =>
   mergeCatalog(
     await Promise.all([
-      fetchList("/discover/movie", { ...filters, sort_by: "vote_average.desc", "vote_count.gte": "150" }),
+      fetchList("/discover/movie", {
+        ...filters,
+        sort_by: "vote_average.desc",
+        "vote_count.gte": "150",
+      }),
       fetchList("/discover/movie", { ...filters, sort_by: "popularity.desc" }),
     ]),
   );
@@ -123,7 +134,11 @@ export const fetchCuratedMovieRow = async (filters: Record<string, string>) =>
 export const fetchCuratedTVRow = async (filters: Record<string, string>) =>
   mergeCatalog(
     await Promise.all([
-      fetchTVList("/discover/tv", { ...filters, sort_by: "vote_average.desc", "vote_count.gte": "150" }),
+      fetchTVList("/discover/tv", {
+        ...filters,
+        sort_by: "vote_average.desc",
+        "vote_count.gte": "150",
+      }),
       fetchTVList("/discover/tv", { ...filters, sort_by: "popularity.desc" }),
     ]),
   );

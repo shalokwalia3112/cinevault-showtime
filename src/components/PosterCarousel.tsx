@@ -3,7 +3,13 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IMG, mediaDate, mediaTitle, type MediaItem } from "@/lib/tmdb";
 
-export function PosterCard({ item, onPlay }: { item: MediaItem; onPlay: (item: MediaItem) => void }) {
+export function PosterCard({
+  item,
+  onPlay,
+}: {
+  item: MediaItem;
+  onPlay: (item: MediaItem) => void;
+}) {
   const title = mediaTitle(item);
   return (
     <Button
@@ -52,7 +58,9 @@ export function PosterCarousel({
         className="flex gap-3 overflow-x-auto scroll-smooth px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:px-10 [&::-webkit-scrollbar]:hidden"
       >
         {items
-          ? items.map((item) => <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={onPlay} />)
+          ? items.map((item) => (
+              <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={onPlay} />
+            ))
           : Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}

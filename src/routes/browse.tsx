@@ -33,7 +33,11 @@ export const Route = createFileRoute("/browse")({
   loaderDeps: ({ search: { q } }) => ({ q }),
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(searchQueryOptions(deps.q)),
   pendingComponent: () => <div className="min-h-screen animate-pulse bg-card" />,
-  errorComponent: ({ error }) => <div role="alert" className="px-6 pt-28">{error.message}</div>,
+  errorComponent: ({ error }) => (
+    <div role="alert" className="px-6 pt-28">
+      {error.message}
+    </div>
+  ),
   notFoundComponent: () => <p className="px-6 pt-28">No titles found.</p>,
   component: Browse,
 });
@@ -56,9 +60,15 @@ function Browse() {
         <h1 className="mb-6 font-display text-2xl tracking-[0.2em] uppercase">
           {q ? `Results for "${q}"` : "Search the CineVault catalog"}
         </h1>
-        {!q && <p className="text-sm text-muted-foreground">Enter a movie or series title in the search bar.</p>}
+        {!q && (
+          <p className="text-sm text-muted-foreground">
+            Enter a movie or series title in the search bar.
+          </p>
+        )}
         <div className="flex flex-wrap gap-3">
-          {results.map((item) => <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={openTitle} />)}
+          {results.map((item) => (
+            <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={openTitle} />
+          ))}
         </div>
         {q && results.length === 0 && (
           <p className="text-sm text-muted-foreground">No movies or series found.</p>

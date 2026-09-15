@@ -1,9 +1,11 @@
 # Restructure CineVault homepage catalog
 
 ## Goal
+
 Replace the current generic homepage rows with six curated regional movie and TV rows in the exact requested order, while keeping the full TMDB catalog available through search.
 
 ## Changes
+
 - Generalize TMDB catalog items so movie and television results share consistent titles, dates, artwork, ratings, and media types.
 - Load the homepage with these rows, in order:
   1. Top Rated Hollywood Series
@@ -20,6 +22,7 @@ Replace the current generic homepage rows with six curated regional movie and TV
 - Use VidLink’s movie URL for films and its season/episode URL for TV. Rely on VidLink’s built-in source and language controls, per the selected single-provider approach.
 
 ## Technical details
+
 - Use TanStack Query route loaders to prefetch the six homepage lists and search results for SSR-friendly initial rendering.
 - Add media normalization helpers and separate movie/TV detail fetchers in the TMDB data module.
 - Route cards by media type to `/movie/$movieId` or `/tv/$tvId`.
