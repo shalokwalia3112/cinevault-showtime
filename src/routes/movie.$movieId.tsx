@@ -2,6 +2,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Clock3, Star } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import { embedUrl, fetchMovieDetails, IMG } from "@/lib/tmdb";
 
 const movieQueryOptions = (movieId: string) =>
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/movie/$movieId")({
   },
   pendingComponent: MoviePageSkeleton,
   errorComponent: MoviePageError,
+  notFoundComponent: () => <p className="px-6 pt-28">Movie not found.</p>,
   component: MoviePage,
 });
 
@@ -149,12 +151,12 @@ function MoviePageError({ error }: { error: Error }) {
       <div>
         <h1 className="font-display text-3xl uppercase">Movie unavailable</h1>
         <p className="mt-3 text-muted-foreground">{error.message}</p>
-        <button
+        <Button
           onClick={() => router.invalidate()}
           className="mt-6 rounded bg-primary px-5 py-2.5 font-semibold text-primary-foreground"
         >
           Try again
-        </button>
+        </Button>
       </div>
     </div>
   );

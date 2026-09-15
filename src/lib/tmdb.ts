@@ -72,8 +72,13 @@ export const fetchTVList = (path: string, params?: Record<string, string>) =>
     d.results.filter((show) => show.poster_path).map((show) => ({ ...show, media_type: "tv" as const })),
   );
 
-export const fetchGenres = () =>
-  get<{ genres: { id: number; name: string }[] }>("/genre/movie/list").then((d) => d.genres);
+export const fetchGenres = async () => {
+  const [movieGenres, tvGenres] = await Promise.all([
+    get<{ genres: { id: number; name: string }[] }>("/genre/movie/list"),
+    get<{ genres: { id: number; name: string }[] }>("/genre/tv/list"),
+  ]);
+  return [...new Map([...movieGenres.genres, ...tvGenres.genres].map((genre) => [genre.id, genre])).values()];
+};
 
 export const searchCatalog = (query: string) =>
   get<{ results: Array<Movie | TVShow | ({ media_type: "person" } & Record<string, unknown>)> }>(

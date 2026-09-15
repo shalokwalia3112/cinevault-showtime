@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Clapperboard, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -49,18 +50,20 @@ export function Navbar() {
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search movies"
+              placeholder="Search movies or series"
               className="w-40 rounded-full border border-border bg-card/80 px-4 py-1.5 text-sm outline-none focus:border-primary md:w-56"
             />
           )}
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             type={open ? "submit" : "button"}
             aria-label="Search"
             onClick={() => !open && setOpen(true)}
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             <Search size={20} />
-          </button>
+          </Button>
         </form>
       </nav>
     </header>

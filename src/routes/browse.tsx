@@ -1,8 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { PosterCard } from "@/components/PosterCarousel";
-import { fetchList, searchMovies, type Movie } from "@/lib/tmdb";
+import { searchCatalog, type MediaItem } from "@/lib/tmdb";
+
+const searchQueryOptions = (query: string) =>
+  queryOptions({
+    queryKey: ["catalog-search", query],
+    queryFn: () => (query ? searchCatalog(query) : Promise.resolve([])),
+  });
 
 export const Route = createFileRoute("/browse")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -10,46 +16,52 @@ export const Route = createFileRoute("/browse")({
   }),
   head: () => ({
     meta: [
-      { title: "Browse Movies — CineVault" },
+      { title: "Search Movies & Series — CineVault" },
       {
         name: "description",
-        content: "Browse and search the CineVault movie catalogue by title, rating and release year.",
+        content: "Search CineVault's global movie and television catalog by title.",
       },
-      { property: "og:title", content: "Browse Movies — CineVault" },
+      { property: "og:title", content: "Search Movies & Series — CineVault" },
       {
         property: "og:description",
-        content: "Search thousands of movies and start watching instantly on CineVault.",
+        content: "Search movies and television series from CineVault's global catalog.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loaderDeps: ({ search: { q } }) => ({ q }),
+  loader: ({ context, deps }) => context.queryClient.ensureQueryData(searchQueryOptions(deps.q)),
+  pendingComponent: () => <div className="min-h-screen animate-pulse bg-card" />,
+  errorComponent: ({ error }) => <div role="alert" className="px-6 pt-28">{error.message}</div>,
+  notFoundComponent: () => <p className="px-6 pt-28">No titles found.</p>,
   component: Browse,
 });
 
 function Browse() {
   const { q } = Route.useSearch();
   const navigate = useNavigate();
-  const openMovie = (movie: Movie) =>
-    navigate({ to: "/movie/$movieId", params: { movieId: String(movie.id) } });
-
-  const movies = useQuery({
-    queryKey: ["browse", q],
-    queryFn: () => (q ? searchMovies(q) : fetchList("/discover/movie", { sort_by: "popularity.desc" })),
-  });
+  const { data: results } = useSuspenseQuery(searchQueryOptions(q));
+  const openTitle = (item: MediaItem) => {
+    if (item.media_type === "tv") {
+      return navigate({ to: "/tv/$tvId", params: { tvId: String(item.id) } });
+    }
+    return navigate({ to: "/movie/$movieId", params: { movieId: String(item.id) } });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="px-6 pt-28 pb-16 md:px-10">
         <h1 className="mb-6 font-display text-2xl tracking-[0.2em] uppercase">
-          {q ? `Results for "${q}"` : "Browse Movies"}
+          {q ? `Results for "${q}"` : "Search the CineVault catalog"}
         </h1>
+        {!q && <p className="text-sm text-muted-foreground">Enter a movie or series title in the search bar.</p>}
         <div className="flex flex-wrap gap-3">
-          {movies.data?.map((m) => <PosterCard key={m.id} movie={m} onPlay={openMovie} />)}
+          {results.map((item) => <PosterCard key={`${item.media_type}-${item.id}`} item={item} onPlay={openTitle} />)}
         </div>
-        {movies.data?.length === 0 && (
-          <p className="text-sm text-muted-foreground">No movies found.</p>
+        {q && results.length === 0 && (
+          <p className="text-sm text-muted-foreground">No movies or series found.</p>
         )}
       </main>
     </div>
