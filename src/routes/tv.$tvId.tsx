@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Clapperboard, Star } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { StreamingControls, type StreamingServer } from "@/components/StreamingControls";
 import { Button } from "@/components/ui/button";
-import { fetchTVDetails, IMG, tvEmbedUrl } from "@/lib/tmdb";
+import { fetchTVDetails, IMG, tvServerUrl } from "@/lib/tmdb";
 
 const tvQueryOptions = (tvId: string) =>
   queryOptions({
@@ -48,6 +49,7 @@ function TVPage() {
   const [season, setSeason] = useState(seasons[0]?.season_number ?? 1);
   const selectedSeason = seasons.find((item) => item.season_number === season);
   const [episode, setEpisode] = useState(1);
+  const [server, setServer] = useState<StreamingServer>(1);
   const cast = show.credits.cast.filter((person) => person.profile_path).slice(0, 8);
 
   return (
@@ -64,19 +66,19 @@ function TVPage() {
         <section aria-label={`${show.name} player`}>
           <div className="aspect-video w-full overflow-hidden rounded-md bg-card shadow-2xl">
             <iframe
-              key={`${season}-${episode}`}
-              src={tvEmbedUrl(show.id, season, episode)}
+              key={`${server}-${season}-${episode}`}
+              src={tvServerUrl(server, show.id, season, episode)}
               title={`${show.name}, season ${season}, episode ${episode}`}
               className="h-full w-full border-0"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen
             />
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3 border-b border-border pb-5">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold">
-              <Clapperboard size={16} /> Episode
-            </span>
-            <select
+          <StreamingControls
+            activeServer={server}
+            onServerChange={setServer}
+            seasonControl={(
+              <select
               aria-label="Season"
               value={season}
               onChange={(event) => {
@@ -84,29 +86,32 @@ function TVPage() {
                 setEpisode(1);
               }}
               className="h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground"
-            >
-              {seasons.map((item) => (
-                <option key={item.id} value={item.season_number}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-            <select
+              >
+                {seasons.map((item) => (
+                  <option key={item.id} value={item.season_number}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            episodeControl={(
+              <select
               aria-label="Episode"
               value={episode}
               onChange={(event) => setEpisode(Number(event.target.value))}
               className="h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground"
-            >
-              {Array.from(
-                { length: selectedSeason?.episode_count ?? 1 },
-                (_, index) => index + 1,
-              ).map((number) => (
-                <option key={number} value={number}>
-                  Episode {number}
-                </option>
-              ))}
-            </select>
-          </div>
+              >
+                {Array.from(
+                  { length: selectedSeason?.episode_count ?? 1 },
+                  (_, index) => index + 1,
+                ).map((number) => (
+                  <option key={number} value={number}>
+                    Episode {number}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
         </section>
 
         <article className="border-b border-border py-7">

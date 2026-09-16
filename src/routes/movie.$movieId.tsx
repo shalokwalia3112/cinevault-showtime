@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Clock3, Star } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { StreamingControls, type StreamingServer } from "@/components/StreamingControls";
 import { Button } from "@/components/ui/button";
-import { embedUrl, fetchMovieDetails, IMG } from "@/lib/tmdb";
+import { fetchMovieDetails, IMG, movieServerUrl } from "@/lib/tmdb";
 
 const movieQueryOptions = (movieId: string) =>
   queryOptions({
@@ -42,6 +44,7 @@ export const Route = createFileRoute("/movie/$movieId")({
 function MoviePage() {
   const { movieId } = Route.useParams();
   const { data: movie } = useSuspenseQuery(movieQueryOptions(movieId));
+  const [server, setServer] = useState<StreamingServer>(1);
   const cast = movie.credits.cast.filter((person) => person.profile_path).slice(0, 8);
 
   return (
@@ -58,13 +61,15 @@ function MoviePage() {
         <section aria-label={`${movie.title} player`}>
           <div className="aspect-video w-full overflow-hidden rounded-md bg-card shadow-2xl">
             <iframe
-              src={embedUrl(movie.id)}
+              key={server}
+              src={movieServerUrl(server, movie.id)}
               title={`${movie.title} player`}
               className="h-full w-full border-0"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen
             />
           </div>
+          <StreamingControls activeServer={server} onServerChange={setServer} />
         </section>
 
         {/* Under-player banner: 728x90 */}
