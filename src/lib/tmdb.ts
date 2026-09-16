@@ -162,3 +162,24 @@ export const embedUrl = (id: number) => `https://vidlink.pro/movie/${id}`;
 
 export const tvEmbedUrl = (id: number, season: number, episode: number) =>
   `https://vidlink.pro/tv/${id}/${season}/${episode}`;
+
+export const movieServerUrl = (server: 1 | 2 | 3 | 4, id: number) => {
+  if (server === 2) return `https://multiembed.eu/embed/tmdb/movie?id=${id}&tmdb=1`;
+  if (server === 3) return `https://www.2embed.cc/embed/${id}`;
+  if (server === 4) return `https://vidsrc.cc/v2/embed/movie/${id}`;
+  return embedUrl(id);
+};
+
+export const tvServerUrl = (
+  server: 1 | 2 | 3 | 4,
+  id: number,
+  season: number,
+  episode: number,
+) => {
+  if (server === 2) {
+    return `https://multiembed.eu/embed/tmdb/tv?id=${id}&tmdb=1&s=${season}&e=${episode}`;
+  }
+  if (server === 3) return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
+  if (server === 4) return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}`;
+  return tvEmbedUrl(id, season, episode);
+};
