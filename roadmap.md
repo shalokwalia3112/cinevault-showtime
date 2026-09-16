@@ -7,6 +7,6 @@
 - [x] Verify desktop and mobile behavior
 - [x] Remove Indian TV serials while retaining web series
 - [x] Add and verify the Hollywood movies section
-- [ ] Add four-server controls to movie and series watch pages
-- [ ] Keep the Indian web-series row limited to OTT releases
-- [ ] Verify server, season, and episode switching
+- [x] Add four-server controls to movie and series watch pages
+- [x] Keep the Indian web-series row limited to OTT releases
+- [x] Verify server, season, and episode switching
