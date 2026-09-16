@@ -24,7 +24,7 @@ const catalogQueryOptions = queryOptions({
       fetchCuratedTVRow({
         with_original_language: "hi",
         with_origin_country: "IN",
-          with_networks: "213|1024|2739|2590|2112",
+          with_networks: "213|1024|2739|2112",
           without_genres: "10766|10764|10767",
       }),
       fetchCuratedMovieRow({ with_original_language: "ko", region: "KR" }),
