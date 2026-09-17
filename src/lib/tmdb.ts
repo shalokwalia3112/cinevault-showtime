@@ -143,6 +143,47 @@ export const fetchCuratedTVRow = async (filters: Record<string, string>) =>
     ]),
   );
 
+export const fetchTrending = async (
+  window: "day" | "week" = "week",
+): Promise<MediaItem[]> =>
+  get<{ results: Array<Movie | TVShow & { media_type: "movie" | "tv" }> }>(
+    "/trending/all",
+    { time_window: window },
+  ).then((data) =>
+    data.results
+      .filter((item) => item.backdrop_path && (item.media_type === "movie" || item.media_type === "tv"))
+      .slice(0, 10)
+      .map((item) => ({ ...item, media_type: item.media_type as "movie" | "tv" })),
+  );
+
+export const fetchTrendingMovies = async (): Promise<MediaItem[]> =>
+  get<{ results: Movie[] & { media_type?: "movie" }[] }>("/trending/movie/week").then((data) =>
+    data.results
+      .filter((m) => m.poster_path)
+      .slice(0, 20)
+      .map((m) => ({ ...m, media_type: "movie" as const })),
+  );
+
+export const fetchTrendingTV = async (): Promise<MediaItem[]> =>
+  get<{ results: TVShow[] & { media_type?: "tv" }[] }>("/trending/tv/week").then((data) =>
+    data.results
+      .filter((s) => s.poster_path)
+      .slice(0, 20)
+      .map((s) => ({ ...s, media_type: "tv" as const })),
+  );
+
+export const fetchMoviesByGenre = async (genreId: number): Promise<MediaItem[]> =>
+  fetchCuratedMovieRow({ with_genres: String(genreId) });
+
+export const fetchTVByGenre = async (genreId: number): Promise<MediaItem[]> =>
+  fetchCuratedTVRow({ with_genres: String(genreId) });
+
+export const fetchTopRatedMovies = async (): Promise<MediaItem[]> =>
+  fetchList("/movie/top_rated").then((items) => items.slice(0, 20));
+
+export const fetchLatestMovies = async (): Promise<MediaItem[]> =>
+  fetchList("/movie/now_playing").then((items) => items.slice(0, 20));
+
 export const mediaTitle = (item: MediaItem) =>
   item.media_type === "movie" ? item.title : item.name;
 

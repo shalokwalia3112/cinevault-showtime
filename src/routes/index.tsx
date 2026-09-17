@@ -1,53 +1,81 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { Tv, Film } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { PosterCarousel } from "@/components/PosterCarousel";
-import { fetchCuratedMovieRow, fetchCuratedTVRow, fetchGenres, type MediaItem } from "@/lib/tmdb";
+import { TrendingHeroCarousel } from "@/components/TrendingHeroCarousel";
+import { PosterCarousel, SectionHeader } from "@/components/PosterCarousel";
+import {
+  fetchTrending,
+  fetchTrendingTV,
+  fetchTVByGenre,
+  fetchMoviesByGenre,
+  fetchTopRatedMovies,
+  fetchLatestMovies,
+  fetchGenres,
+  type MediaItem,
+} from "@/lib/tmdb";
+
+const TMDB_GENRE_IDS = {
+  action: 28,
+  comedy: 35,
+  horror: 27,
+  scifi: 878,
+  romance: 10749,
+  thriller: 53,
+  mystery: 9648,
+  animation: 16,
+  family: 10751,
+  drama: 18,
+} as const;
 
 const catalogQueryOptions = queryOptions({
-  queryKey: ["home-catalog"],
+  queryKey: ["home-catalog-v2"],
   queryFn: async () => {
     const [
-      hollywoodSeries,
-      hollywoodMovies,
-      bollywoodMovies,
-      indianSeries,
-      koreanMovies,
-      koreanDramas,
-      animeSeries,
+      trending,
+      trendingTV,
+      dramaTV,
+      actionScifiTV,
+      actionMovies,
+      comedyMovies,
+      horrorMovies,
+      scifiMovies,
+      romanceMovies,
+      thrillerMovies,
+      animationMovies,
+      topRatedMovies,
+      latestMovies,
       genres,
     ] = await Promise.all([
-      fetchCuratedTVRow({ with_original_language: "en", with_origin_country: "US|GB" }),
-      fetchCuratedMovieRow({ with_original_language: "en", region: "US" }),
-      fetchCuratedMovieRow({ with_original_language: "hi", region: "IN" }),
-      fetchCuratedTVRow({
-        with_original_language: "hi",
-        with_origin_country: "IN",
-          with_networks: "213|1024|2739|2112",
-          without_genres: "10766|10764|10767",
-      }),
-      fetchCuratedMovieRow({ with_original_language: "ko", region: "KR" }),
-      fetchCuratedTVRow({
-        with_original_language: "ko",
-        with_origin_country: "KR",
-        with_genres: "18",
-      }),
-      fetchCuratedTVRow({
-        with_original_language: "ja",
-        with_origin_country: "JP",
-        with_genres: "16",
-      }),
+      fetchTrending("week"),
+      fetchTrendingTV(),
+      fetchTVByGenre(TMDB_GENRE_IDS.drama),
+      fetchTVByGenre(TMDB_GENRE_IDS.action),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.action),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.comedy),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.horror),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.scifi),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.romance),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.thriller),
+      fetchMoviesByGenre(TMDB_GENRE_IDS.animation),
+      fetchTopRatedMovies(),
+      fetchLatestMovies(),
       fetchGenres(),
     ]);
     return {
-      hollywoodSeries,
-      hollywoodMovies,
-      bollywoodMovies,
-      indianSeries,
-      koreanMovies,
-      koreanDramas,
-      animeSeries,
+      trending,
+      trendingTV,
+      dramaTV,
+      actionScifiTV,
+      actionMovies,
+      comedyMovies,
+      horrorMovies,
+      scifiMovies,
+      romanceMovies,
+      thrillerMovies,
+      animationMovies,
+      topRatedMovies,
+      latestMovies,
       genres,
     };
   },
@@ -61,13 +89,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Discover top-rated Hollywood movies and series, Indian web series, Bollywood films, K-dramas, Korean cinema and anime.",
+          "Discover trending movies and TV series, top-rated Hollywood films, Indian web series, K-dramas, Korean cinema and anime. Stream across our 4-server ecosystem.",
       },
       { property: "og:title", content: "CineVault — Top Global Movies & Series" },
       {
         property: "og:description",
         content:
-          "Top-rated Hollywood movies and series, Indian web series, and acclaimed entertainment from Korea and Japan.",
+          "Trending today: top movies and TV series across action, comedy, horror, sci-fi, romance, thriller, animation and more.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,39 +121,80 @@ function Home() {
   return (
     <div className="min-h-screen bg-background pb-16">
       <Navbar />
-      <Hero item={data.hollywoodSeries[0]} genres={data.genres} onPlay={openTitle} />
+      <TrendingHeroCarousel items={data.trending} genres={data.genres} onPlay={openTitle} />
+
       <div className="relative -mt-16">
+        {/* TV Series Section */}
+        <SectionHeader
+          label="TV Series"
+          icon={<Tv size={24} className="text-primary" />}
+        />
         <PosterCarousel
-          title="Top Rated Hollywood Series"
-          items={data.hollywoodSeries}
+          title="Trending TV Shows"
+          items={data.trendingTV}
           onPlay={openTitle}
         />
         <PosterCarousel
-          title="Top Rated Hollywood Movies"
-          items={data.hollywoodMovies}
+          title="High-Rated Drama Series"
+          items={data.dramaTV}
           onPlay={openTitle}
         />
         <PosterCarousel
-          title="Popular Bollywood Blockbusters"
-          items={data.bollywoodMovies}
+          title="Action & Sci-Fi Shows"
+          items={data.actionScifiTV}
+          onPlay={openTitle}
+        />
+
+        {/* Movies Section */}
+        <SectionHeader
+          label="Movies"
+          icon={<Film size={24} className="text-primary" />}
+        />
+        <PosterCarousel
+          title="Action Movies"
+          items={data.actionMovies}
           onPlay={openTitle}
         />
         <PosterCarousel
-          title="Trending Indian Web Series"
-          items={data.indianSeries}
+          title="Comedy Movies"
+          items={data.comedyMovies}
           onPlay={openTitle}
         />
         <PosterCarousel
-          title="Top Rated Korean Cinema"
-          items={data.koreanMovies}
+          title="Horror Movies"
+          items={data.horrorMovies}
           onPlay={openTitle}
         />
         <PosterCarousel
-          title="Trending Korean Dramas"
-          items={data.koreanDramas}
+          title="Sci-Fi & Fantasy"
+          items={data.scifiMovies}
           onPlay={openTitle}
         />
-        <PosterCarousel title="Popular Anime Series" items={data.animeSeries} onPlay={openTitle} />
+        <PosterCarousel
+          title="Romance Movies"
+          items={data.romanceMovies}
+          onPlay={openTitle}
+        />
+        <PosterCarousel
+          title="Thriller & Mystery Movies"
+          items={data.thrillerMovies}
+          onPlay={openTitle}
+        />
+        <PosterCarousel
+          title="Animation & Family Movies"
+          items={data.animationMovies}
+          onPlay={openTitle}
+        />
+        <PosterCarousel
+          title="Top Rated Classics"
+          items={data.topRatedMovies}
+          onPlay={openTitle}
+        />
+        <PosterCarousel
+          title="Latest Releases"
+          items={data.latestMovies}
+          onPlay={openTitle}
+        />
       </div>
     </div>
   );

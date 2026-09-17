@@ -35,6 +35,22 @@ export function PosterCard({
   );
 }
 
+export function SectionHeader({
+  label,
+  icon,
+}: {
+  label: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-2 mt-8 flex items-center gap-3 px-6 md:px-10">
+      {icon}
+      <h2 className="font-display text-2xl tracking-[0.15em] uppercase">{label}</h2>
+      <div className="h-px flex-1 bg-border/50" />
+    </div>
+  );
+}
+
 export function PosterCarousel({
   title,
   items,
